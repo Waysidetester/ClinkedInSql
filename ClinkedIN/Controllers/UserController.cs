@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ClinkedIn.Data;
-using ClinkedIn.Models;
-using ClinkedIn.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,14 +11,7 @@ namespace ClinkedIn.Controllers
     [ApiController]
     public class MemberController : ControllerBase
     {
-        readonly MemberRepo _memberRepo;
-        readonly MemberValidator _validator;
 
-        public MemberController()
-        {
-            _memberRepo = new MemberRepo();
-            _validator = new MemberValidator();
-        }
 
         [HttpGet("{id}")]
         public ActionResult<MemberWithDescriptions> GetMember(int id) => _memberRepo.GetMember(id).ConvertInterests();
