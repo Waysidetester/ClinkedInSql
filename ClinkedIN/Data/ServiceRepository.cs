@@ -78,5 +78,38 @@ namespace ClinkedIN.Data
             throw new Exception("You didnt get the services? How!");
         }
 
+        public DbService DeleteService(int id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                var deleteService = connection.CreateCommand();
+                deleteService.CommandText = @"DELETE FROM Services
+                                              OUTPUT Deleted.*
+                                              WHERE Id = @id";
+
+                deleteService.Parameters.AddWithValue("id", id);
+
+                var reader = deleteService.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    var confirmedDeletedService = new DbService()
+                    {
+                        Id = (int)reader["Id"],
+                        Name = reader["name"].ToString(),
+                        Description = reader["description"].ToString(),
+                        Price = (decimal)reader["price"]
+                    };
+                    connection.Close();
+
+                    return confirmedDeletedService;
+                }
+            }
+
+            throw new Exception("No Service Deleted");
+        }
+
     }
 }

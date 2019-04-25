@@ -34,12 +34,22 @@ namespace ClinkedIN.Controllers
             return newService;
         }
 
+        // To Successfully execute, Run a GET request
         [HttpGet]
         public ActionResult<List<DbService>> GetAllServices()
         {
             var allServices = _serviceRepository.GetAllServices();
 
             return allServices;
+        }
+
+        // To delete a service, pass the service Id in the URL
+        [HttpDelete("{id}")]
+        public ActionResult<DbService> DeleteService(int id)
+        {
+            var deleteService = _serviceRepository.DeleteService(id);
+
+            return deleteService;
         }
     }
 }
