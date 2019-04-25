@@ -15,10 +15,10 @@ namespace ClinkedIN.Controllers
     {
         const string ConnectionString = "Server = localhost; Database = ClinkedIn; Trusted_Connection = True;";
         
-
+        [HttpPost]
         public AddInterest AddInterest(AddInterest newInterest)
         {
-            using (var connection = new SqlConnection(ConnectionString)) //using block is like a try catch but makes sure we always end with connection.Close
+            using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
                 var insertInterestsCommand = connection.CreateCommand();
@@ -26,8 +26,7 @@ namespace ClinkedIN.Controllers
                                               Output inserted. *
                                               Values (@Name)";
 
-                //using parameters here takes care of sql injection by sanitizing data
-                //"username" must match the variable above, the 2nd paramter can be anything it just gets passed through
+                
                 insertInterestsCommand.Parameters.AddWithValue("Name", newInterest.Name);
 
                 var reader = insertInterestsCommand.ExecuteReader();
