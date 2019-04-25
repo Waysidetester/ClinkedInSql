@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ClinkedIn.Controllers
+namespace ClinkedIn.Models
 {
     public class MemberWithDescriptions
     {
