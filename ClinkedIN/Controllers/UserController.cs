@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ClinkedIn.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,7 @@ namespace ClinkedIn.Controllers
         [HttpGet("{id}/release")]
         public ActionResult GetReleaseDays(int id)
         {
-            throw new Exception();
+            throw new Exception();  
         }
     }
 }
