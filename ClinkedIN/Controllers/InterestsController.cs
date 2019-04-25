@@ -22,7 +22,7 @@ namespace ClinkedIN.Controllers
             {
                 connection.Open();
                 var insertInterestsCommand = connection.CreateCommand();
-                insertInterestsCommand.CommandText = $@"Insert into interests ()
+                insertInterestsCommand.CommandText = $@"Insert into interests (name)
                                               Output inserted. *
                                               Values(@name)";
 
