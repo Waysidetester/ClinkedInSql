@@ -37,7 +37,9 @@ namespace ClinkedIN.Controllers
         [HttpGet]
         public ActionResult<List<DbService>> GetAllServices()
         {
+            var allServices = _serviceRepository.GetAllServices();
 
+            return allServices;
         }
     }
 }

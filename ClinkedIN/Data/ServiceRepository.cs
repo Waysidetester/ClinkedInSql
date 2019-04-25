@@ -49,7 +49,7 @@ namespace ClinkedIN.Data
 
         public List<DbService> GetAllServices()
         {
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
                 List<DbService> AllServices = new List<DbService>();
                 connection.Open();
@@ -63,15 +63,19 @@ namespace ClinkedIN.Data
                 while (reader.Read())
                 {
                     AllServices.Add(new DbService()
-                    {
-                        Id = (int)reader["Id"],
-                        Name = reader["name"].ToString(),
-                        Description = reader["description"].ToString(),
-                        Price = (decimal)reader["price"]
-                    }
+                        {
+                            Id = (int)reader["Id"],
+                            Name = reader["name"].ToString(),
+                            Description = reader["description"].ToString(),
+                            Price = (decimal)reader["price"]
+                        }
                     );
                 }
+                connection.Close();
+
+                return AllServices;
             }
+            throw new Exception("You didnt get the services? How!");
         }
 
     }
