@@ -11,12 +11,13 @@ namespace ClinkedIn.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
-    { 
+    {
         [HttpPost]
         public ActionResult AddNewUser(AddUser addUserRequest)
         {
             var newUser = addUserRequest.AddNewUser();
             return Accepted($"api/user/{newUser.Id}", newUser);
+        }
 
         [HttpGet("{id}")]
         public ActionResult<MemberWithDescriptions> GetMember(int id)

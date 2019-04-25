@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ClinkedIN.Models
+namespace ClinkedIn.Models
 {
     public class AddUser
     {
