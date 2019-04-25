@@ -45,5 +45,41 @@ namespace ClinkedIN.Controllers
 
             throw new Exception("No interest found");
         }
+
+        [HttpGet]
+        public List<Interests> GetAll()
+        {
+            var users = new List<Interests>();
+            //connection string
+            var connection = new SqlConnection("Server = localhost; Database = SwordAndFather; Trusted_Connection = True;");
+            connection.Open();
+
+            //descriptive command for what it should be executing against the server in SQL
+            var getAllUsersCommand = connection.CreateCommand();
+            getAllUsersCommand.CommandText = "SELECT username, password, id FROM users";
+
+            //execute reader if i want to know results
+            //execute nonQuery if I don't care about seeing results(only rows affected)
+            //execute scalar returns top left most column and row
+            var reader = getAllUsersCommand.ExecuteReader();
+
+            //asks for more data, returns true or false for if there is more data
+            //initial reader returns no data, we must use READ method 
+            //can use a while loop to get all info out of reader
+            while (reader.Read())
+            {
+                var id = (int)reader["id"]; //use direct casting to int
+                var username = reader["username"].ToString(); //cast to appropriate type
+                var password = reader["password"].ToString();
+                var user = new User(username, password) { Id = id };
+
+                users.Add(user); //loop continues to build list until it runs out of data
+            }
+
+            connection.Close();
+
+            return users;
+
+        }
     }
 }
