@@ -11,7 +11,7 @@ namespace ClinkedIN.Data
     {
         const string ConnectionString = "Server=localhost;Database=ClinkedIn;Trusted_Connection=True;";
 
-        public SuccessfulAddedService AddService(string name, string description, decimal price)
+        public DbService AddService(string name, string description, decimal price)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -30,7 +30,7 @@ namespace ClinkedIN.Data
 
                 if (reader.Read())
                 {
-                    var newService = new SuccessfulAddedService()
+                    var newService = new DbService()
                     {
                         Id = (int)reader["Id"],
                         Name = reader["name"].ToString(),
@@ -45,6 +45,33 @@ namespace ClinkedIN.Data
             }
 
             throw new Exception("Service not inserted");
+        }
+
+        public List<DbService> GetAllServices()
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                List<DbService> AllServices = new List<DbService>();
+                connection.Open();
+
+                var selectServices = connection.CreateCommand();
+                selectServices.CommandText = @"SELECT *
+                                               FROM Services";
+
+                var reader = selectServices.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    AllServices.Add(new DbService()
+                    {
+                        Id = (int)reader["Id"],
+                        Name = reader["name"].ToString(),
+                        Description = reader["description"].ToString(),
+                        Price = (decimal)reader["price"]
+                    }
+                    );
+                }
+            }
         }
 
     }

@@ -9,11 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinkedIN.Controllers
 {
-    /* To Add a service to the DB pass the following:
-     * Name: a string less than 255 characters
-     * Description: a string less than 255 characters
-     * Price: a decimal type number with a max of 10 digits, two of which are after the decimal
-     * */
     [Route("api/[controller]")]
     [ApiController]
     public class ServiceController : ControllerBase
@@ -25,11 +20,24 @@ namespace ClinkedIN.Controllers
             _serviceRepository = new ServiceRepository();
         }
 
-        public ActionResult<SuccessfulAddedService> AddService (CreateServiceRequest serviceToAdd)
+        /* To Add a service to the DB pass the following:
+         * Name: a string less than 255 characters
+         * Description: a string less than 255 characters
+         * Price: a decimal type number with a max of 10 digits, two of which are after the decimal
+         */
+
+        [HttpPost]
+        public ActionResult<DbService> AddService (CreateServiceRequest serviceToAdd)
         {
             var newService = _serviceRepository.AddService(serviceToAdd.Name, serviceToAdd.Description, serviceToAdd.Price);
 
             return newService;
+        }
+
+        [HttpGet]
+        public ActionResult<List<DbService>> GetAllServices()
+        {
+
         }
     }
 }
