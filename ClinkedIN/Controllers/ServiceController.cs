@@ -9,7 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinkedIN.Controllers
 {
-
+    /* To Add a service to the DB pass the following:
+     * Name: a string less than 255 characters
+     * Description: a string less than 255 characters
+     * Price: a decimal type number with a max of 10 digits, two of which are after the decimal
+     * */
     [Route("api/[controller]")]
     [ApiController]
     public class ServiceController : ControllerBase
