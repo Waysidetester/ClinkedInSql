@@ -41,5 +41,11 @@ namespace ClinkedIN.Controllers
 
             return allServices;
         }
+
+        [HttpDelete]
+        public ActionResult<DbService> DeleteService(int id)
+        {
+
+        }
     }
 }
