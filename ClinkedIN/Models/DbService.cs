@@ -1,6 +1,6 @@
 ﻿namespace ClinkedIN.Models
 {
-    public class SuccessfulAddedService
+    public class DbService
     {
         public int Id { get; set; }
         public string Name { get; set; }
