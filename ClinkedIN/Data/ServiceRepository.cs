@@ -78,6 +78,16 @@ namespace ClinkedIN.Data
             throw new Exception("You didnt get the services? How!");
         }
 
+        public DbService DeleteService(int id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                var deleteService = connection.CreateCommand();
+                
+            }
+        }
 
     }
 }
