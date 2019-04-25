@@ -22,7 +22,7 @@ namespace ClinkedIn.Controllers
         [HttpGet("{id}/release")]
         public ActionResult GetReleaseDays(int id)
         {
-            throw new Exception();
+            throw new Exception();  
         }
     }
 }
