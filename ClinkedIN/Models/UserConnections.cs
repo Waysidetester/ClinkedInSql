@@ -149,7 +149,7 @@ namespace ClinkedIn.Models
             {
                 connection.Open();
                 var getUserCmd = connection.CreateCommand();
-                getUserCmd.CommandText = @"Select Users.*, Services.Name as ServiceName, Services.Description, Services.Price 
+                getUserCmd.CommandText = @"Select Users.*, Services.Name as ServiceName, Services.Description, Services.Price, Services.Id as ServiceId 
                                            From Users
                                            Join UserServices on UserServices.UserId = Users.Id
                                            Join Services on Services.Id = UserServices.ServiceId
@@ -167,7 +167,8 @@ namespace ClinkedIn.Models
                     var serviceName = reader["ServiceName"].ToString();
                     var description = reader["Description"].ToString();
                     var price = (decimal)reader["Price"];
-                    var service = new DbService() { Name = serviceName, Description = description, Price = price};
+                    var serviceId = (int)reader["ServiceId"];
+                    var service = new DbService() { Name = serviceName, Description = description, Price = price, Id = serviceId};
                     user.Services.Add(service);                    
                 }
                 return user;

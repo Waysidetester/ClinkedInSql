@@ -63,5 +63,12 @@ namespace ClinkedIn.Controllers
             var user = new UserConnections().DeleteUser(id);
             return Accepted(user);
         }
+
+        [HttpGet("{id}&wservices")]
+        public ActionResult GetUserWithServices(int id)
+        {
+            var user = new UserConnections().GetUserWithServices(id);
+            return Accepted(user);
+        }
     }
 }
