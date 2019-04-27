@@ -40,5 +40,40 @@ namespace ClinkedIN.Data
             }
             throw new Exception("buckets of tears");
         }
+
+        public List<MatchedUserService> GetMembersByService(int serviceId)
+        {
+            List<MatchedUserService> matchedUsers = new List<MatchedUserService>();
+
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                var getUsersByService = connection.CreateCommand();
+                getUsersByService.CommandText = @"SELECT s.Name [Service], s.Price, u.*
+                                                 FROM UserServices as us
+                                                 JOIN Users as u on u.id = us.UserId
+                                                 JOIN Services as s on s.Id = us.ServiceId
+                                                 WHERE us.ServiceId = @serviceId";
+                getUsersByService.Parameters.AddWithValue("serviceId", serviceId);
+
+                var reader = getUsersByService.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    matchedUsers.Add(new MatchedUserService()
+                    {
+                        Id = (int)reader["Id"],
+                        ServiceName = reader["Service"].ToString(),
+                        Price = (decimal)reader["Price"],
+                        UserName = reader["Name"].ToString(),
+                        ReleaseDate = (DateTime)reader["ReleaseDate"],
+                        Age = (int)reader["Age"],
+                        IsPrisoner = (bool)reader["IsPrisoner"]
+                    });
+                }
+            }
+            return matchedUsers;
+        }
     }
 }
