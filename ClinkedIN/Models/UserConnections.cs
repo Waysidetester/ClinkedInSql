@@ -9,7 +9,7 @@ namespace ClinkedIn.Models
 {
     public class UserConnections
     {
-        const string ConnectionString = "Server = localhost; Database = ClinkedIn; Trusted_Connection = True;";
+        const string ConnectionString = "Server = localhost; Database = ClinkedIn; Trusted_Connection = True; MultipleActiveResultSets=True";
         public string Name { get; set; }
         public DateTime ReleaseDate { get; set; }
         public int Age { get; set; }
@@ -148,32 +148,42 @@ namespace ClinkedIn.Models
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
-                var getUserCmd = connection.CreateCommand();
-                getUserCmd.CommandText = @"Select Users.*, Services.Name as ServiceName, Services.Description, Services.Price, ServiceId,
-                                           Interests.Name as InterestName
-                                           From Users
-                                           Join UserServices on UserServices.UserId = Users.Id
-                                           Join Services on Services.Id = UserServices.ServiceId
-                                           Join UserInterests on UserInterests.UserId = Users.Id
-                                           Join Interests on Interests.Id = UserInterests.InterestId
-                                           Where Users.Id = @Id";
-                getUserCmd.Parameters.AddWithValue("Id", id);
-                var reader = getUserCmd.ExecuteReader();
+                var selectServicesCmd = connection.CreateCommand();
+                selectServicesCmd.CommandText = @"Select Users.*, Services.Name as ServiceName, Services.Description, Services.Price, ServiceId
+                                                  From Users
+                                                  Join UserServices on UserServices.UserId = Users.Id
+                                                  Join Services on Services.Id = UserServices.ServiceId
+                                                  Where Users.Id = @Id";
+                selectServicesCmd.Parameters.AddWithValue("Id", id);
+                var servicesReader = selectServicesCmd.ExecuteReader();
                 var user = new User() { Services = new List<DbService>(), Interests = new List<string>()};
-                while (reader.Read())
+                while (servicesReader.Read())
                 {
-                    user.Name = reader["Name"].ToString();
-                    user.ReleaseDate = (DateTime)reader["ReleaseDate"];
-                    user.Age = (int)reader["Age"];
-                    user.IsPrisoner = (bool)reader["IsPrisoner"];
+                    user.Name = servicesReader["Name"].ToString();
+                    user.ReleaseDate = (DateTime)servicesReader["ReleaseDate"];
+                    user.Age = (int)servicesReader["Age"];
+                    user.IsPrisoner = (bool)servicesReader["IsPrisoner"];
 
-                    var serviceName = reader["ServiceName"].ToString();
-                    var description = reader["Description"].ToString();
-                    var price = (decimal)reader["Price"];
-                    var serviceId = (int)reader["ServiceId"];
+                    var serviceName = servicesReader["ServiceName"].ToString();
+                    var description = servicesReader["Description"].ToString();
+                    var price = (decimal)servicesReader["Price"];
+                    var serviceId = (int)servicesReader["ServiceId"];
                     var service = new DbService() { Name = serviceName, Description = description, Price = price, Id = serviceId};
                     user.Services.Add(service);                
                 }
+                var selectInterestsCmd = connection.CreateCommand();
+                selectInterestsCmd.CommandText = @"Select Interests.Name as InterestName
+                                                   From Users
+                                                   Join UserInterests on UserInterests.UserId = Users.Id
+                                                   Join Interests on Interests.Id = UserInterests.InterestId
+                                                   Where Users.Id = @Id";
+                selectInterestsCmd.Parameters.AddWithValue("Id", id);
+                var interestsReader = selectInterestsCmd.ExecuteReader();
+                while (interestsReader.Read())
+                {
+                    user.Interests.Add(interestsReader["InterestName"].ToString());
+                }
+                
                 return user;
             }
             throw new Exception("Ya blew it!");
