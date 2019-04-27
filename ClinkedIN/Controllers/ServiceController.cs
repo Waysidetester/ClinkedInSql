@@ -72,5 +72,10 @@ namespace ClinkedIN.Controllers
             return memberServices;
         }
 
+        [HttpGet("{serviceId}")]
+        public ActionResult<List<MatchedUserService>> GetMembersByService(int serviceId)
+        {
+            return _memberServiceRepo.GetMembersByService(serviceId);
+        }
     }
 }
