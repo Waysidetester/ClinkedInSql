@@ -66,12 +66,12 @@ namespace ClinkedIN.Controllers
                 var name = reader["name"].ToString();
                 var interest = new Interest(name) { Name = name };
 
-                .Add(interest); //loop continues to build list until it runs out of data
+                interestsList.Add(interest); //loop continues to build list until it runs out of data
             }
 
             connection.Close();
 
-            return interests;
+            return interestsList;
 
         }
     }
