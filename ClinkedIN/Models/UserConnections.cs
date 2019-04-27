@@ -7,6 +7,18 @@ using System.Threading.Tasks;
 
 namespace ClinkedIn.Models
 {
+    public class UserService
+    {
+        public int UserId { get; set; }
+        public int ServiceId { get; set; }
+    }
+
+    public class UserInterest
+    {
+        public int UserId { get; set; }
+        public int InterestId { get; set; }
+    }
+
     public class UserConnections
     {
         const string ConnectionString = "Server = localhost; Database = ClinkedIn; Trusted_Connection = True; MultipleActiveResultSets=True";
@@ -156,7 +168,7 @@ namespace ClinkedIn.Models
                                                   Where Users.Id = @Id";
                 selectServicesCmd.Parameters.AddWithValue("Id", id);
                 var servicesReader = selectServicesCmd.ExecuteReader();
-                var user = new User() { Services = new List<DbService>(), Interests = new List<string>()};
+                var user = new User() { Services = new List<DbService>(), Interests = new List<Interest>()};
                 while (servicesReader.Read())
                 {
                     user.Name = servicesReader["Name"].ToString();
@@ -181,12 +193,106 @@ namespace ClinkedIn.Models
                 var interestsReader = selectInterestsCmd.ExecuteReader();
                 while (interestsReader.Read())
                 {
-                    user.Interests.Add(interestsReader["InterestName"].ToString());
+                    var interest = new Interest(interestsReader["InterestName"].ToString());
+                    user.Interests.Add(interest);
                 }
                 
                 return user;
             }
             throw new Exception("Ya blew it!");
         }
+
+        public List<User> GetAllUsersWithDetails()
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var usersCmd = connection.CreateCommand();
+                usersCmd.CommandText = "Select * From Users";
+                var usersReader = usersCmd.ExecuteReader();
+
+                var servicesCmd = connection.CreateCommand();
+                servicesCmd.CommandText = "Select * From Services";
+                var servicesReader = servicesCmd.ExecuteReader();
+
+                var interestsCmd = connection.CreateCommand();
+                interestsCmd.CommandText = "Select * From Interests";
+                var interestsReader = interestsCmd.ExecuteReader();
+
+                var userServicesCmd = connection.CreateCommand();
+                userServicesCmd.CommandText = "Select * From UserServices";
+                var userServicesReader = userServicesCmd.ExecuteReader();
+
+                var userInterestsCmd = connection.CreateCommand();
+                userInterestsCmd.CommandText = "Select * From UserInterests";
+                var userInterestsReader = userInterestsCmd.ExecuteReader();
+
+                var users = new List<User>();
+                var services = new List<DbService>();
+                var interests = new List<Interest>();
+                var userServices = new List<UserService>();
+                var userInterests = new List<UserInterest>();
+
+                while (usersReader.Read())
+                {
+                    var name = usersReader["Name"].ToString();
+                    var releaseDate = (DateTime)usersReader["ReleaseDate"];
+                    var age = (int)usersReader["Age"];
+                    var isPrisoner = (bool)usersReader["IsPrisoner"];
+                    var user = new User(name, releaseDate, age, isPrisoner) { Services = new List<DbService>(), Interests = new List<Interest>()};
+                    user.Id = (int)usersReader["Id"];
+                    users.Add(user);
+                }
+
+                while (servicesReader.Read())
+                {
+                    var id = (int)servicesReader["Id"];
+                    var name = servicesReader["name"].ToString();
+                    var description = servicesReader["description"].ToString();
+                    var price = (decimal)servicesReader["price"];
+                    var service = new DbService() { Id = id, Name = name, Description = description, Price = price};
+                    services.Add(service);
+                }
+
+                while (interestsReader.Read())
+                {
+                    var name = interestsReader["Name"].ToString();
+                    var id = (int)interestsReader["Id"];
+                    var interest = new Interest(name) { Id = id};
+                    interests.Add(interest);
+                }
+
+                while (userServicesReader.Read())
+                {
+                    var userId = (int)userServicesReader["UserId"];
+                    var serviceId = (int)userServicesReader["ServiceId"];
+                    var userService = new UserService() { UserId = userId, ServiceId = serviceId };
+                    userServices.Add(userService);
+                }
+
+                while (userInterestsReader.Read())
+                {
+                    var userId = (int)userInterestsReader["UserId"];
+                    var interestId = (int)userInterestsReader["InterestId"];
+                    var userInterest = new UserInterest() { UserId = userId, InterestId = interestId };
+                    userInterests.Add(userInterest);
+                }
+
+                foreach(User user in users)
+                {
+                    var serviceList = from userService in userServices
+                                      join service in services on userService.UserId equals user.Id where service.Id == userService.ServiceId
+                                      select service;
+
+                    user.Services.AddRange(serviceList.ToList());
+                    var interestList = from userInterest in userInterests
+                                      join interest in interests on userInterest.UserId equals user.Id where interest.Id == userInterest.InterestId
+                                      select interest;
+                    user.Interests.AddRange(interestList.ToList());
+                }
+                return users;
+            }
+            throw new Exception("Ya blew it!");
+        }  
     }
 }

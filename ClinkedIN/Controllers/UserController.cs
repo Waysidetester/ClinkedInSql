@@ -70,5 +70,12 @@ namespace ClinkedIn.Controllers
             var user = new UserConnections().GetUserWithDetails(id);
             return Accepted(user);
         }
+
+        [HttpGet("&details")]
+        public ActionResult GetAllUsersWDetails()
+        {
+            var users = new UserConnections().GetAllUsersWithDetails();
+            return Accepted(users);
+        }
     }
 }

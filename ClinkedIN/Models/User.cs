@@ -14,7 +14,7 @@ namespace ClinkedIn.Models
         public bool IsPrisoner { get; set; }
         public int Id { get; set; }
         public List<DbService> Services { get; set; }
-        public List<string> Interests { get; set; }
+        public List<Interest> Interests { get; set; }
 
         public User(string name, DateTime releaseDate, int age, bool isPrisoner)
         {
