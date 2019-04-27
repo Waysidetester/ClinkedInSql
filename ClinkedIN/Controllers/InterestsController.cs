@@ -58,15 +58,12 @@ namespace ClinkedIN.Controllers
 
             var reader = getAllInterestsCommand.ExecuteReader();
 
-            //asks for more data, returns true or false for if there is more data
-            //initial reader returns no data, we must use READ method 
-            //can use a while loop to get all info out of reader
             while (reader.Read())
             {
                 var name = reader["name"].ToString();
                 var interest = new Interest(name) { Name = name };
 
-                interestsList.Add(interest); //loop continues to build list until it runs out of data
+                interestsList.Add(interest);
             }
 
             connection.Close();
