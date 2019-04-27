@@ -72,6 +72,7 @@ namespace ClinkedIN.Controllers
             return memberServices;
         }
 
+        // Pass service Id into the URL.
         [HttpGet("{serviceId}")]
         public ActionResult<List<MatchedUserService>> GetMembersByService(int serviceId)
         {
