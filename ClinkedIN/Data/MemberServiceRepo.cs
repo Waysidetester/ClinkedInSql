@@ -45,7 +45,7 @@ namespace ClinkedIN.Data
         {
             List<MatchedUserService> matchedUsers = new List<MatchedUserService>();
 
-            using (var connection = new SqlConnection())
+            using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
 
@@ -53,6 +53,7 @@ namespace ClinkedIN.Data
                 getUsersByService.CommandText = @"SELECT s.Name [Service], s.Price, u.*
                                                  FROM UserServices as us
                                                  JOIN Users as u on u.id = us.UserId
+                                                 JOIN Services as s on s.Id = us.ServiceId
                                                  WHERE us.ServiceId = @serviceId";
                 getUsersByService.Parameters.AddWithValue("serviceId", serviceId);
 
@@ -64,7 +65,7 @@ namespace ClinkedIN.Data
                     {
                         Id = (int)reader["Id"],
                         ServiceName = reader["Service"].ToString(),
-                        Price = (double)reader["Price"],
+                        Price = (decimal)reader["Price"],
                         UserName = reader["Name"].ToString(),
                         ReleaseDate = (DateTime)reader["ReleaseDate"],
                         Age = (int)reader["Age"],
@@ -72,7 +73,7 @@ namespace ClinkedIN.Data
                     });
                 }
             }
-            return matchedUsers
+            return matchedUsers;
         }
     }
 }
