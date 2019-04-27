@@ -13,7 +13,7 @@ namespace ClinkedIn.Controllers
     public class UserController : ControllerBase
     {
         [HttpPost]
-        public ActionResult AddNewUser(AddUser addUserRequest)
+        public ActionResult AddNewUser(UserConnections addUserRequest)
         {
             var newUser = addUserRequest.AddNewUser();
             return Accepted($"api/user/{newUser.Id}", newUser);
@@ -22,24 +22,24 @@ namespace ClinkedIn.Controllers
         [HttpGet]
         public ActionResult GetAllUsers()
         {
-            var users = new GetUsers().GetAllUsers();
+            var users = new UserConnections().GetAllUsers();
             return Accepted($"api/user", users);
         }
 
         [HttpGet("{id}")]
         public ActionResult GetSpecificUser(int id)
         {
-            var user = new GetUsers().GetSpecificUser(id);
+            var user = new UserConnections().GetSpecificUser(id);
             return Accepted($"api/user/{id}", user);
         }
 
         [HttpGet("{id}&warden={name}")]
         public ActionResult GetUsersAsWarden(int id, string name)
         {
-            var user = new GetUsers().GetSpecificUser(id);
+            var user = new UserConnections().GetSpecificUser(id);
             if (name == user.Name)
             {
-                var users = new GetUsers().GetUsersAsWarden(user.IsPrisoner);
+                var users = new UserConnections().GetUsersAsWarden(user.IsPrisoner);
                 return Accepted(users);
             }
             return Accepted();
@@ -55,6 +55,13 @@ namespace ClinkedIn.Controllers
         public ActionResult GetReleaseDays(int id)
         {
             throw new Exception();  
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult DeleteUser(int id)
+        {
+            var user = new UserConnections().DeleteUser(id);
+            return Accepted(user);
         }
     }
 }
