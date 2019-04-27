@@ -14,10 +14,12 @@ namespace ClinkedIN.Controllers
     public class ServiceController : ControllerBase
     {
         readonly ServiceRepository _serviceRepository;
+        readonly MemberServiceRepo _memberServiceRepo;
 
         public ServiceController()
         {
             _serviceRepository = new ServiceRepository();
+            _memberServiceRepo = new MemberServiceRepo();
         }
 
         /* To Add a service to the DB pass the following:
@@ -27,7 +29,7 @@ namespace ClinkedIN.Controllers
          */
 
         [HttpPost]
-        public ActionResult<DbService> AddService (CreateServiceRequest serviceToAdd)
+        public ActionResult<DbService> AddService(CreateServiceRequest serviceToAdd)
         {
             var newService = _serviceRepository.AddService(serviceToAdd.Name, serviceToAdd.Description, serviceToAdd.Price);
 
@@ -51,5 +53,24 @@ namespace ClinkedIN.Controllers
 
             return deleteService;
         }
+
+        /* Send the member ID in the URL
+         * Send the Service ID/s in the Body as "Ids": [array, of, ints]
+         */
+        [HttpPost("{id}")]
+        public ActionResult<List<MemberService>> AddServiceToMember(int id, ServiceIds services)
+        {
+            List<MemberService> memberServices = new List<MemberService>();
+
+            foreach (var service in services.Ids)
+            {
+                var membService = _memberServiceRepo.AddMemberServices(id, service);
+
+                memberServices.Add(membService);
+            }
+
+            return memberServices;
+        }
+
     }
 }
