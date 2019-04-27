@@ -16,7 +16,7 @@ namespace ClinkedIN.Controllers
         const string ConnectionString = "Server = localhost; Database = ClinkedIn; Trusted_Connection = True;";
         
         [HttpPost]
-        public AddInterest AddInterest(AddInterest newInterest)
+        public Interest AddInterest(Interest newInterest)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -44,6 +44,32 @@ namespace ClinkedIN.Controllers
             }
 
             throw new Exception("No interest found");
+        }
+
+        [HttpGet]
+        public List<Interest> GetAll()
+        {
+            var interestsList = new List<Interest>();
+            var connection = new SqlConnection("Server = localhost; Database = ClinkedIn; Trusted_Connection = True;");
+            connection.Open();
+
+            var getAllInterestsCommand = connection.CreateCommand();
+            getAllInterestsCommand.CommandText = "SELECT * FROM interests";
+
+            var reader = getAllInterestsCommand.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var name = reader["name"].ToString();
+                var interest = new Interest(name) { Name = name };
+
+                interestsList.Add(interest);
+            }
+
+            connection.Close();
+
+            return interestsList;
+
         }
     }
 }

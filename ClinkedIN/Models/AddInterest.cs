@@ -5,8 +5,15 @@ using System.Threading.Tasks;
 
 namespace ClinkedIN.Models
 {
-    public class AddInterest
+    public class Interest
     {
+        public Interest(string name)
+        {
+            Name = name;
+        }
+
         public string Name { get; set; }
+
     }
+
 }

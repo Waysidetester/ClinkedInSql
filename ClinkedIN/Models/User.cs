@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClinkedIN.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace ClinkedIn.Models
         public int Age { get; set; }
         public bool IsPrisoner { get; set; }
         public int Id { get; set; }
+        public List<DbService> Services { get; set; }
 
         public User(string name, DateTime releaseDate, int age, bool isPrisoner)
         {
@@ -19,6 +21,11 @@ namespace ClinkedIn.Models
             ReleaseDate = releaseDate;
             Age = age;
             IsPrisoner = isPrisoner;
+        }
+
+        public User()
+        {
+
         }
     }
 }
