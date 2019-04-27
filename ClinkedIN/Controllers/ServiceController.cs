@@ -57,9 +57,16 @@ namespace ClinkedIN.Controllers
         [HttpPost("{id}")]
         public ActionResult<List<MemberService>> AddServiceToMember(int id, ServiceIds services)
         {
-            var membServicesList = _memberServiceRepo.AddMemberServices(id, services.Ids);
+            List<MemberService> memberServices = new List<MemberService>();
 
-            return membServicesList;
+            foreach (var service in services.Ids)
+            {
+                var membService = _memberServiceRepo.AddMemberServices(id, service);
+
+                memberServices.Add(membService);
+            }
+
+            return memberServices;
         }
         
     }
