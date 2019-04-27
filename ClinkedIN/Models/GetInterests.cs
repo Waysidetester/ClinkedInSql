@@ -7,5 +7,7 @@ namespace ClinkedIN.Models
 {
     public class GetInterests
     {
+            public List<Interest> InterestsList { get; set; }
+        
     }
 }

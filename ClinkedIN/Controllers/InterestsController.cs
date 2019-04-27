@@ -16,7 +16,7 @@ namespace ClinkedIN.Controllers
         const string ConnectionString = "Server = localhost; Database = ClinkedIn; Trusted_Connection = True;";
         
         [HttpPost]
-        public AddInterest AddInterest(AddInterest newInterest)
+        public Interest AddInterest(Interest newInterest)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -47,38 +47,31 @@ namespace ClinkedIN.Controllers
         }
 
         [HttpGet]
-        public List<Interests> GetAll()
+        public List<Interest> GetAll()
         {
-            var users = new List<Interests>();
-            //connection string
-            var connection = new SqlConnection("Server = localhost; Database = SwordAndFather; Trusted_Connection = True;");
+            var interestsList = new List<Interest>();
+            var connection = new SqlConnection("Server = localhost; Database = ClinkedIn; Trusted_Connection = True;");
             connection.Open();
 
-            //descriptive command for what it should be executing against the server in SQL
-            var getAllUsersCommand = connection.CreateCommand();
-            getAllUsersCommand.CommandText = "SELECT username, password, id FROM users";
+            var getAllInterestsCommand = connection.CreateCommand();
+            getAllInterestsCommand.CommandText = "SELECT * FROM interests";
 
-            //execute reader if i want to know results
-            //execute nonQuery if I don't care about seeing results(only rows affected)
-            //execute scalar returns top left most column and row
-            var reader = getAllUsersCommand.ExecuteReader();
+            var reader = getAllInterestsCommand.ExecuteReader();
 
             //asks for more data, returns true or false for if there is more data
             //initial reader returns no data, we must use READ method 
             //can use a while loop to get all info out of reader
             while (reader.Read())
             {
-                var id = (int)reader["id"]; //use direct casting to int
-                var username = reader["username"].ToString(); //cast to appropriate type
-                var password = reader["password"].ToString();
-                var user = new User(username, password) { Id = id };
+                var name = reader["name"].ToString();
+                var interest = new Interest(name) { Name = name };
 
-                users.Add(user); //loop continues to build list until it runs out of data
+                .Add(interest); //loop continues to build list until it runs out of data
             }
 
             connection.Close();
 
-            return users;
+            return interests;
 
         }
     }
