@@ -29,7 +29,7 @@ namespace ClinkedIN.Controllers
          */
 
         [HttpPost]
-        public ActionResult<DbService> AddService (CreateServiceRequest serviceToAdd)
+        public ActionResult<DbService> AddService(CreateServiceRequest serviceToAdd)
         {
             var newService = _serviceRepository.AddService(serviceToAdd.Name, serviceToAdd.Description, serviceToAdd.Price);
 
@@ -54,6 +54,9 @@ namespace ClinkedIN.Controllers
             return deleteService;
         }
 
+        /* Send the member ID in the URL
+         * Send the Service ID/s in the Body as "Ids": [array, of, ints]
+         */
         [HttpPost("{id}")]
         public ActionResult<List<MemberService>> AddServiceToMember(int id, ServiceIds services)
         {
@@ -68,6 +71,6 @@ namespace ClinkedIN.Controllers
 
             return memberServices;
         }
-        
+
     }
 }
