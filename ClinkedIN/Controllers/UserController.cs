@@ -67,7 +67,7 @@ namespace ClinkedIn.Controllers
         [HttpGet("{id}&wservices")]
         public ActionResult GetUserWithServices(int id)
         {
-            var user = new UserConnections().GetUserWithServices(id);
+            var user = new UserConnections().GetUserWithDetails(id);
             return Accepted(user);
         }
     }

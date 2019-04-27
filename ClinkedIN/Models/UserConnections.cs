@@ -143,20 +143,23 @@ namespace ClinkedIn.Models
             }
         }
 
-        public User GetUserWithServices(int id)
+        public User GetUserWithDetails(int id)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
                 var getUserCmd = connection.CreateCommand();
-                getUserCmd.CommandText = @"Select Users.*, Services.Name as ServiceName, Services.Description, Services.Price, Services.Id as ServiceId 
+                getUserCmd.CommandText = @"Select Users.*, Services.Name as ServiceName, Services.Description, Services.Price, ServiceId,
+                                           Interests.Name as InterestName
                                            From Users
                                            Join UserServices on UserServices.UserId = Users.Id
                                            Join Services on Services.Id = UserServices.ServiceId
+                                           Join UserInterests on UserInterests.UserId = Users.Id
+                                           Join Interests on Interests.Id = UserInterests.InterestId
                                            Where Users.Id = @Id";
                 getUserCmd.Parameters.AddWithValue("Id", id);
                 var reader = getUserCmd.ExecuteReader();
-                var user = new User() { Services = new List<DbService>()};
+                var user = new User() { Services = new List<DbService>(), Interests = new List<string>()};
                 while (reader.Read())
                 {
                     user.Name = reader["Name"].ToString();
@@ -169,7 +172,7 @@ namespace ClinkedIn.Models
                     var price = (decimal)reader["Price"];
                     var serviceId = (int)reader["ServiceId"];
                     var service = new DbService() { Name = serviceName, Description = description, Price = price, Id = serviceId};
-                    user.Services.Add(service);                    
+                    user.Services.Add(service);                
                 }
                 return user;
             }
