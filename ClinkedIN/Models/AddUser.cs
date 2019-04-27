@@ -11,7 +11,7 @@ namespace ClinkedIn.Models
         public string Name { get; set; }
         public DateTime ReleaseDate { get; set; }
         public int Age { get; set; }
-        public int IsPrisoner { get; set; }
+        public bool IsPrisoner { get; set; }
 
         const string ConnectionString = "Server = localhost; Database = ClinkedIn; Trusted_Connection = True;";
 
@@ -33,7 +33,7 @@ namespace ClinkedIn.Models
                     var addedName = reader["Name"].ToString();
                     var addedReleaseDate = (DateTime)reader["ReleaseDate"];
                     var addedAge = (Int32)reader["Age"];
-                    var addedIsPrisoner = (bool)reader["IsPrisoner"] ? 1 : 0;
+                    var addedIsPrisoner = (bool)reader["IsPrisoner"];
 
                     var user = new User(addedName, addedReleaseDate, addedAge, addedIsPrisoner);
                     user.Id = (Int32)reader["id"];
