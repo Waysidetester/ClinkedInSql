@@ -19,6 +19,32 @@ namespace ClinkedIn.Controllers
             return Accepted($"api/user/{newUser.Id}", newUser);
         }
 
+        [HttpGet]
+        public ActionResult GetAllUsers()
+        {
+            var users = new GetUsers().GetAllUsers();
+            return Accepted($"api/user", users);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult GetSpecificUser(int id)
+        {
+            var user = new GetUsers().GetSpecificUser(id);
+            return Accepted($"api/user/{id}", user);
+        }
+
+        [HttpGet("{id}&warden={name}")]
+        public ActionResult GetUsersAsWarden(int id, string name)
+        {
+            var user = new GetUsers().GetSpecificUser(id);
+            if (name == user.Name)
+            {
+                var users = new GetUsers().GetUsersAsWarden(user.IsPrisoner);
+                return Accepted(users);
+            }
+            return Accepted();
+        }
+
         [HttpGet("{id}")]
         public ActionResult<MemberWithDescriptions> GetMember(int id)
         {
