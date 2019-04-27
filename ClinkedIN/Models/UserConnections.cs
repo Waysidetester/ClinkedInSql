@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClinkedIN.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -140,6 +141,39 @@ namespace ClinkedIn.Models
                 }
                 throw new Exception("Ya blew it!");
             }
+        }
+
+        public User GetUserWithServices(int id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var getUserCmd = connection.CreateCommand();
+                getUserCmd.CommandText = @"Select Users.*, Services.Name as ServiceName, Services.Description, Services.Price, Services.Id as ServiceId 
+                                           From Users
+                                           Join UserServices on UserServices.UserId = Users.Id
+                                           Join Services on Services.Id = UserServices.ServiceId
+                                           Where Users.Id = @Id";
+                getUserCmd.Parameters.AddWithValue("Id", id);
+                var reader = getUserCmd.ExecuteReader();
+                var user = new User() { Services = new List<DbService>()};
+                while (reader.Read())
+                {
+                    user.Name = reader["Name"].ToString();
+                    user.ReleaseDate = (DateTime)reader["ReleaseDate"];
+                    user.Age = (int)reader["Age"];
+                    user.IsPrisoner = (bool)reader["IsPrisoner"];
+
+                    var serviceName = reader["ServiceName"].ToString();
+                    var description = reader["Description"].ToString();
+                    var price = (decimal)reader["Price"];
+                    var serviceId = (int)reader["ServiceId"];
+                    var service = new DbService() { Name = serviceName, Description = description, Price = price, Id = serviceId};
+                    user.Services.Add(service);                    
+                }
+                return user;
+            }
+            throw new Exception("Ya blew it!");
         }
     }
 }
