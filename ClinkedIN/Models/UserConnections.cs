@@ -7,18 +7,6 @@ using System.Threading.Tasks;
 
 namespace ClinkedIn.Models
 {
-    public class UserService
-    {
-        public int UserId { get; set; }
-        public int ServiceId { get; set; }
-    }
-
-    public class UserInterest
-    {
-        public int UserId { get; set; }
-        public int InterestId { get; set; }
-    }
-
     public class UserConnections
     {
         const string ConnectionString = "Server = localhost; Database = ClinkedIn; Trusted_Connection = True; MultipleActiveResultSets=True";
@@ -212,26 +200,20 @@ namespace ClinkedIn.Models
                 var usersReader = usersCmd.ExecuteReader();
 
                 var servicesCmd = connection.CreateCommand();
-                servicesCmd.CommandText = "Select * From Services";
+                servicesCmd.CommandText = @"Select Services.*, UserServices.UserId
+                                            From UserServices
+                                            Join Services on UserServices.ServiceId = Services.Id";
                 var servicesReader = servicesCmd.ExecuteReader();
 
                 var interestsCmd = connection.CreateCommand();
-                interestsCmd.CommandText = "Select * From Interests";
+                interestsCmd.CommandText = @"Select Interests.*, UserInterests.UserId
+                                             From UserInterests
+                                             Join Interests on UserInterests.InterestId = Interests.Id";
                 var interestsReader = interestsCmd.ExecuteReader();
-
-                var userServicesCmd = connection.CreateCommand();
-                userServicesCmd.CommandText = "Select * From UserServices";
-                var userServicesReader = userServicesCmd.ExecuteReader();
-
-                var userInterestsCmd = connection.CreateCommand();
-                userInterestsCmd.CommandText = "Select * From UserInterests";
-                var userInterestsReader = userInterestsCmd.ExecuteReader();
 
                 var users = new List<User>();
                 var services = new List<DbService>();
                 var interests = new List<Interest>();
-                var userServices = new List<UserService>();
-                var userInterests = new List<UserInterest>();
 
                 while (usersReader.Read())
                 {
@@ -250,7 +232,8 @@ namespace ClinkedIn.Models
                     var name = servicesReader["name"].ToString();
                     var description = servicesReader["description"].ToString();
                     var price = (decimal)servicesReader["price"];
-                    var service = new DbService() { Id = id, Name = name, Description = description, Price = price};
+                    var userId = (int)servicesReader["UserId"];
+                    var service = new DbService() { Id = id, Name = name, Description = description, Price = price, UserId = userId};
                     services.Add(service);
                 }
 
@@ -258,37 +241,18 @@ namespace ClinkedIn.Models
                 {
                     var name = interestsReader["Name"].ToString();
                     var id = (int)interestsReader["Id"];
-                    var interest = new Interest(name) { Id = id};
+                    var userId = (int)interestsReader["UserId"];
+                    var interest = new Interest(name) { Id = id, UserId = userId};
                     interests.Add(interest);
-                }
-
-                while (userServicesReader.Read())
-                {
-                    var userId = (int)userServicesReader["UserId"];
-                    var serviceId = (int)userServicesReader["ServiceId"];
-                    var userService = new UserService() { UserId = userId, ServiceId = serviceId };
-                    userServices.Add(userService);
-                }
-
-                while (userInterestsReader.Read())
-                {
-                    var userId = (int)userInterestsReader["UserId"];
-                    var interestId = (int)userInterestsReader["InterestId"];
-                    var userInterest = new UserInterest() { UserId = userId, InterestId = interestId };
-                    userInterests.Add(userInterest);
                 }
 
                 foreach(User user in users)
                 {
-                    var serviceList = from userService in userServices
-                                      join service in services on userService.UserId equals user.Id where service.Id == userService.ServiceId
-                                      select service;
+                    var userServices = services.Where(service => service.UserId == user.Id).ToList();
+                    user.Services.AddRange(userServices);
 
-                    user.Services.AddRange(serviceList.ToList());
-                    var interestList = from userInterest in userInterests
-                                      join interest in interests on userInterest.UserId equals user.Id where interest.Id == userInterest.InterestId
-                                      select interest;
-                    user.Interests.AddRange(interestList.ToList());
+                    var userInterests = interests.Where(interest => interest.UserId == user.Id).ToList();
+                    user.Interests.AddRange(userInterests);
                 }
                 return users;
             }
